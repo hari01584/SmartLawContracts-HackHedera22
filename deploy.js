@@ -19,13 +19,78 @@ const operatorKey = PrivateKey.fromString(process.env.OPERATOR_PVKEY);
 
 const client = Client.forTestnet().setOperator(operatorId, operatorKey);
 
+async function startContractAble(file){
+	console.log("Starting making contract of " + file);
+	// Import the compiled contract bytecode
+	const contractBytecode = fs.readFileSync("build/"+file);
+
+	const fileCreateTx = new FileCreateTransaction()
+		.setContents(contractBytecode)
+		.setKeys([operatorKey])
+		.freezeWith(client);
+		
+	const fileCreateSign = await fileCreateTx.sign(operatorKey);
+	const fileCreateSubmit = await fileCreateSign.execute(client);
+	const fileCreateRx = await fileCreateSubmit.getReceipt(client);
+	const bytecodeFileId = fileCreateRx.fileId;
+	console.log(`- The bytecode file ID is: ${bytecodeFileId} \n`);
+
+	// Instantiate the smart contract
+	const contractInstantiateTx = new ContractCreateTransaction()
+		.setBytecodeFileId(bytecodeFileId)
+		.setGas(100000)
+		.setConstructorParameters(
+			new ContractFunctionParameters()
+		);
+	const contractInstantiateSubmit = await contractInstantiateTx.execute(client);
+	const contractInstantiateRx = await contractInstantiateSubmit.getReceipt(client);
+	const contractId = contractInstantiateRx.contractId;
+	const contractAddress = contractId.toSolidityAddress();
+	console.log(`- The smart contract ID is: ${contractId} \n`);
+	console.log(`- The smart contract ID in Solidity format is: ${contractAddress} \n`);
+
+
+	let data = JSON.stringify('' + contractId);
+	fs.writeFileSync('contract.json', data);
+}
+
+async function promptUserForBinary(){
+	const testFolder = './build/';
+	var filesdata = []
+	fs.readdir(testFolder, (err, files) => {
+	filesdata = files;
+	var i = 0;
+	files.forEach(file => {
+		console.log(i+1+". "+file);
+		i++;
+	});
+
+	const prompt = require("prompt-sync")({ sigint: true });
+	const fno = prompt("Choose file number? ");
+
+	startContractAble(filesdata[fno - 1]);
+	});
+}
+
 async function main() {
 	// Compile File to bytecode
-	var data = require("./compile.js");
-	console.log(data);
+	// var compiled = require("./compile.js")("OwnerContract.sol");
+	// console.log(compiled.getByteCode());
+	const { exec } = require("child_process");
 
-	// Import the compiled contract bytecode
-	// const contractBytecode = fs.readFileSync("sample_sol_LookupContract.bin");
+	exec("solcjs --bin contracts/LegalContract.sol --output-dir build", (error, stdout, stderr) => {
+		if (error) {
+			console.log(`error: ${error.message}`);
+			return;
+		}
+		if (stderr) {
+			console.log(`stderr: ${stderr}`);
+			return;
+		}
+		console.log(`stdout: ${stdout}`);
+		promptUserForBinary();
+	});
+
 
 	return;
 
