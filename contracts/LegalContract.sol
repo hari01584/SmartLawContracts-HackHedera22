@@ -12,11 +12,25 @@ contract LegalContract {
   }
 
   // deploy a new contract (ie a new case)
-  function newLegalContractUnit() public returns(address newContract)
+  function newLegalContractUnit() public
   {
     LegalContractUnit c = new LegalContractUnit();
     contracts.push(c);
-    return address(c);
+    // return address(c);
+  }
+
+  function sayHi() public returns (string memory){
+    return "Say hi";
+  }
+
+  string public vzars;
+  function writeHi() public returns (string memory){
+    vzars = "data";
+    return vzars;
+  }
+
+  function set_message() public{
+    vzars = "data";
   }
 
   function resolveLegalContract(address contractAddr) public{
