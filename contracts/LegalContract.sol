@@ -19,19 +19,19 @@ contract LegalContract {
     // return address(c);
   }
 
-  function sayHi() public returns (string memory){
-    return "Say hi";
-  }
+  // function sayHi() public returns (string memory){
+  //   return "Say hi";
+  // }
 
-  string public vzars;
-  function writeHi() public returns (string memory){
-    vzars = "data";
-    return vzars;
-  }
+  // string public vzars;
+  // function writeHi() public returns (string memory){
+  //   vzars = "data";
+  //   return vzars;
+  // }
 
-  function set_message() public{
-    vzars = "data";
-  }
+  // function set_message() public{
+  //   vzars = "data";
+  // }
 
   function resolveLegalContract(address contractAddr) public{
       LegalContractUnit c = LegalContractUnit(contractAddr);

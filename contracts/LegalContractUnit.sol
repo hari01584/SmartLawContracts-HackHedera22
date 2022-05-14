@@ -20,6 +20,7 @@ contract LegalContractUnit is Owner
   }
 
   function resolveContract() public {
+    // TODO ADD resolution conditions and verify it.
     resolved = true;
   }
 }

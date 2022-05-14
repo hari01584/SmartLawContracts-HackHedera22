@@ -54,8 +54,8 @@ async function callQueries(){
         // Set which contract
         .setContractId(contractId)
         // Set the gas to execute the contract call
-        .setGas(75000)
-        .setPayableAmount(new Hbar(1))
+        .setGas(100000)
+        .setPayableAmount(new Hbar(1000))
         .setFunction(
             "set_message"
         )
